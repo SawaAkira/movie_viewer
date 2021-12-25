@@ -1,0 +1,45 @@
+body {
+    margin: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul,ol,p {
+    padding: 0;
+    margin: 0;
+    font-size: 18px;
+}
+ul,ol {
+    list-style: none;
+}
+a,
+a:focus {
+    text-decoration: none;
+    color: #000;
+    /* 移除移动端a标签点击高亮 */
+    -webkit-tap-highlight-color: transparent;
+}
+input , textarea {
+    outline: none;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+button {
+    border: 1px solid #ccc;  
+}
+
+
+.f_left {
+    float: left;
+}
+.f_right {
+    float: right;
+}
+.clearfix::after {
+    content: "";
+    display: block;
+    clear: both;
+}
