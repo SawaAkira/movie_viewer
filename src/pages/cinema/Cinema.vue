@@ -1,20 +1,28 @@
 <template>
   <div class="cinema" ref="cinema">
-    <comp-cinemanav :cid="cityId" @get-data="getChildData"></comp-cinemanav>
-    <div class="cinemaList">
+    <comp-cinemanav v-if="isShow" :cid="cityId" @get-data="getChildData"></comp-cinemanav>
+    <div class="cinemaList" v-if="isShow">
       <comp-cinemacard
         v-for="item in cinemaList"
         :key="item.cinemaId"
         :citem="item"
+        @click.native="toCinemaPage(item.cinemaId)"
       ></comp-cinemacard>
-      <div class="more">{{ moreTip }}</div>
+      <div class="more">
+          <comp-loadinganimate v-if="moreTip" :wah="50"></comp-loadinganimate>
+          <span v-if="!moreTip">没有更多了/(ㄒoㄒ)/~~</span>
+      </div>
     </div>
+    <div class="loadingBox" v-if="isLoadingShow">
+        <comp-loadinganimate :wah="80"></comp-loadinganimate>
+      </div>
   </div>
 </template>
 
 <script>
 import CompCinemanav from "@/components/comp-cinemanav.vue";
 import CompCinemacard from "@/components/comp-cinemacard.vue";
+import CompLoadinganimate from '@/components/comp-loadinganimate.vue'
 export default {
   data() {
     return {
@@ -32,17 +40,22 @@ export default {
       stationId: -1, // 地铁车站
 
       cinemaList: [],
-      moreTip: "加载中...",
-      isMore:true,
+      moreTip: true,
+      isMore: true,
+      isLoadingShow: false,
+      isShow: true,
     };
   },
   components: {
     CompCinemanav,
     CompCinemacard,
+    CompLoadinganimate,
   },
   methods: {
     // 获取电影院数据
     getLocalCinema() {
+      this.isShow = false;
+      this.isLoadingShow = true;
       axios
         .get("/index/moreCinemas", {
           params: {
@@ -62,6 +75,8 @@ export default {
         })
         .then((data) => {
           if (data.status == 200) {
+            this.isShow = true;
+            this.isLoadingShow = false;
             this.cinemaList = data.data;
           }
         });
@@ -105,11 +120,11 @@ export default {
           setTimeout(() => {
             if (ch + st == sh) {
               if (!(this.cinemaList.length % this.limit)) {
-                this.moreTip = "加载中...";
+                this.moreTip = true;
                 this.offset += 10;
                 this.getMoreCinema();
               } else {
-                this.moreTip = "没有更多了/(ㄒoㄒ)/~~";
+                this.moreTip = false;
               }
             }
           }, 300);
@@ -124,11 +139,20 @@ export default {
       this.brandId = obj.brandId,
       this.serviceId = obj.serviceId,
       this.areaId = obj.areaId,
-      this.limit = 20;
+      this.limit = 10;
       this.getLocalCinema();
+    },
+    // 获取当天日期
+    getDate(){
+      let date = new Date();
+      this.day = date.getFullYear() +'-'+ (date.getMonth() + 1) +'-'+ date.getDate();
+    },
+    toCinemaPage(cinemaId){
+      this.$router.push({path:'/cinema', query: {cinemaId,ci:this.cityId,}})
     }
   },
   created() {
+    this.getDate();
     if(localStorage.getItem("localCity")){
       this.cityId = JSON.parse(localStorage.getItem("localCity")).id;
     } else {
@@ -144,10 +168,10 @@ export default {
   },
   watch: {
     cinemaList(arr){
-      if(arr.length < 20){
-        this.moreTip = "没有更多了/(ㄒoㄒ)/~~";
+      if(arr.length < this.limit){
+        this.moreTip = false;
       } else {
-        this.moreTip = "加载中...";
+        this.moreTip = true;
       }
     }
   }
@@ -172,10 +196,22 @@ export default {
   width: 100%;
 
   .more {
-    text-align: center;
+    display: flex;
     padding: 10px 0;
     margin-top: 10px;
     background-color: #fff;
+    span{
+      height: 50px;
+      line-height: 50px;
+      width: 100%;
+      text-align: center;
+    }
   }
+}
+.loadingBox {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: calc(50% - 80px / 2);
 }
 </style>

@@ -5,24 +5,34 @@
       :key="item.movieId"
       :citem="item"
     ></comp-classiccard>
-    <div class="more">{{ moreTip }}</div>
+    <div class="more" v-if="isShow">
+        <comp-loadinganimate v-if="moreTip" :wah="50"></comp-loadinganimate>
+        <span v-if="!moreTip">没有更多了/(ㄒoㄒ)/~~</span>
+    </div>
+    <div class="loadingBox" v-if="isLoadingShow">
+      <comp-loadinganimate :wah="80"></comp-loadinganimate>
+    </div>
   </div>
 </template>
 
 <script>
 import CompClassiccard from "@/components/comp-classiccard.vue";
+import CompLoadinganimate from '@/components/comp-loadinganimate.vue'
 export default {
   data() {
     return {
       limit: 10,
       offset: 0,
       classicMovieList: [],
-      moreTip: "加载中...",
+      moreTip: true,
       isMore: true,
+      isLoadingShow: true,
+      isShow: false,
     };
   },
   components: {
     CompClassiccard,
+    CompLoadinganimate,
   },
   methods: {
     // 获取电影列表
@@ -37,6 +47,8 @@ export default {
           },
         })
         .then((data) => {
+          this.isShow = true;
+          this.isLoadingShow = false;
           if (data.status == 200) {
             this.classicMovieList = data.data;
           }
@@ -79,7 +91,7 @@ export default {
                 this.offset += 10;
                 this.getMoreClassic();
               } else {
-                this.moreTip = "没有更多了/(ㄒoㄒ)/~~";
+                this.moreTip = false;
               }
             }
           }, 300);
@@ -113,10 +125,23 @@ export default {
   }
 
   .more {
-    text-align: center;
+    display: flex;
     padding: 10px 0;
     margin-top: 10px;
     background-color: #fff;
+
+    span{
+      height: 50px;
+      line-height: 50px;
+      width: 100%;
+      text-align: center;
+    }
   }
+}
+.loadingBox {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: calc(50% - 80px / 2);
 }
 </style>

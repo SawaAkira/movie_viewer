@@ -1,6 +1,6 @@
 <template>
-  <div :style="{ backgroundColor: movieDataList.backgroundColor }">
-    <div class="movieInfoPage">
+  <div>
+    <div class="movieInfoPage" :style="{ backgroundColor: movieDataList.backgroundColor }">
       <div class="link" v-if="isShow"><router-link to="/">观影人电影 > </router-link>{{movieDataList.nm}}</div>
       <comp-infoheader :mdata="movieDataList"></comp-infoheader>
       <comp-infoscore :mdata="movieDataList"></comp-infoscore>
@@ -37,7 +37,7 @@
           </div>
         </div>
       </div>
-      <div class="stills" v-if="isShow">
+      <div class="stills" v-if="movieDataList.pn">
         <div class="miHeader"><h3>剧照</h3><span>{{"全部" + movieDataList.pn + "张"}} <i class="bi bi-chevron-right"></i></span></div>
         <div class="miBox">
           <div class="miList">
@@ -50,14 +50,16 @@
         </div>
       </div>
     </div>
-    <div class="loadingTip" v-if="isLoading"><span> 加载中...</span></div>
+    <div class="loadingBox" v-if="isLoading">
+      <comp-loadinganimate :wah="80"></comp-loadinganimate>
+    </div>
   </div>
 </template>
 
 <script>
 import CompInfoheader from "@/components/comp-infoheader.vue";
 import CompInfoscore from "@/components/comp-infoscore.vue";
-
+import CompLoadinganimate from '@/components/comp-loadinganimate.vue'
 export default {
   name: "MovieInfo",
   data() {
@@ -74,11 +76,12 @@ export default {
   components: {
     CompInfoheader,
     CompInfoscore,
+    CompLoadinganimate,
   },
   methods: {
     getMovieInfo() {
       this.movieId = this.$route.params.id;
-      axios.get("/movie/detail?movieid=" + this.movieId).then((data) => {
+      axios.get("/movie/detail",{params:{movieid:this.movieId}}).then((data) => {
         if (data.status == 200) {
           this.isShow = true;
           this.isLoading = false;
@@ -101,6 +104,7 @@ export default {
 <style lang="scss" scoped>
 .movieInfoPage {
   height: 100%;
+  min-height: 100vh;
   padding: 20px 18px;
   box-sizing: border-box;
 
@@ -118,23 +122,11 @@ export default {
   }
 }
 
-.loadingTip {
+.loadingBox {
   position: absolute;
-  top: 30%;
   width: 100%;
-  display: flex;
-
-  span {
-    display: block;
-    margin: 0 auto;
-    padding: 10px 30px;
-    background-color: rgba($color: #000000, $alpha: 0.5);
-    border-radius: 5px;
-    color: #fff;
-    font-size: 18px;
-    box-sizing: border-box;
-    text-align: center;
-  }
+  left: 0;
+  top: calc(50% - 80px / 2);
 }
 .scoreBox{
   margin-top: 15px;

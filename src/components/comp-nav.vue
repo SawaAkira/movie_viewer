@@ -14,12 +14,6 @@
         </router-link>
       </li>
       <li>
-        <router-link active-class="active" to="/shortvideo">
-          <div class="bgBox"></div>
-          <div class="text">短视频</div>
-        </router-link>
-      </li>
-      <li>
         <router-link active-class="active" to="/personal">
           <div class="bgBox"></div>
           <div class="text">我的</div>
@@ -76,10 +70,6 @@ li:nth-child(2) .bgBox {
 }
 
 li:nth-child(3) .bgBox {
-  background: url(../assets/nav/shortvideo.png) no-repeat 0 0 / cover;
-}
-
-li:nth-child(4) .bgBox {
   background: url(../assets/nav/personal.png) no-repeat 0 0 / cover;
 }
 
@@ -98,10 +88,6 @@ li:nth-child(2) .active .bgBox {
 }
 
 li:nth-child(3) .active .bgBox {
-  background: url(../assets/nav/shortvideo_active.png) no-repeat 0 0 / cover;
-}
-
-li:nth-child(4) .active .bgBox {
   background: url(../assets/nav/personal_active.png) no-repeat 0 0 / cover;
 }
 </style>

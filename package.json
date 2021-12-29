@@ -11,7 +11,10 @@
     "bootstrap-icons": "^1.7.2",
     "core-js": "^3.6.5",
     "postcss-pxtorem": "^5.1.1",
+    "swiper": "^7.4.1",
     "vue": "^2.6.11",
+    "vue-awesome-swiper": "^4.1.1",
+    "vue-lottie": "^0.2.1",
     "vue-router": "^3.2.0"
   },
   "devDependencies": {
@@ -19,6 +22,7 @@
     "@vue/cli-plugin-router": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "axios": "^0.18.0",
+    "lottie-web": "^5.8.1",
     "node-sass": "^4.12.0",
     "sass-loader": "^8.0.2",
     "vue-cli-plugin-axios": "0.0.4",

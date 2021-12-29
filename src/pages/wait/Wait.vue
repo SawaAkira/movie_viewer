@@ -30,13 +30,20 @@
           :citem="item"
         ></comp-moviecard>
       </div>
-      <div class="more">{{ moreTip }}</div>
+      <div class="more" v-if="isShow">
+        <comp-loadinganimate v-if="moreTip" :wah="50"></comp-loadinganimate>
+        <span v-if="!moreTip">没有更多了/(ㄒoㄒ)/~~</span>
+      </div>
     </section>
+    <div class="loadingBox" v-if="isLoadingShow">
+      <comp-loadinganimate :wah="80"></comp-loadinganimate>
+    </div>
   </div>
 </template>
 
 <script>
 import CompMoviecard from "@/components/comp-moviecard.vue";
+import CompLoadinganimate from "@/components/comp-loadinganimate.vue";
 export default {
   data() {
     return {
@@ -49,14 +56,17 @@ export default {
       movieList: [],
       movieObj: {},
       movieArr: [],
-      moreTip: "加载中...",
+      moreTip: true,
       localCityId: 1,
       isMoreExpect: true,
-      isMore:true,
+      isMore: true,
+      isLoadingShow: true,
+      isShow: false,
     };
   },
   components: {
     CompMoviecard,
+    CompLoadinganimate,
   },
   methods: {
     // 获取近期最受期待数据
@@ -106,6 +116,8 @@ export default {
           params: { ci: this.localCityId, limit: this.limit },
         })
         .then((data) => {
+          this.isShow = true;
+          this.isLoadingShow = false;
           if (data.status == 200) {
             let list = data.data.coming;
             let ids = data.data.movieIds;
@@ -120,7 +132,9 @@ export default {
         this.isMore = false;
         let str = arr.join(",");
         axios
-          .get("/index/moreComingList", { params: { movieIds: str, ci: this.localCityId } })
+          .get("/index/moreComingList", {
+            params: { movieIds: str, ci: this.localCityId },
+          })
           .then((data) => {
             if (data.status == 200) {
               this.isMore = true;
@@ -142,6 +156,7 @@ export default {
         obj.rt = item.rt;
         if (item.showStateButton) {
           obj.btn = item.showStateButton.content;
+          obj.link = "moviesales";
           if (item.showStateButton.content == "预售") {
             obj.score = "<span>" + item.wish + "</span>人想看";
             obj.color = "#FAAF00";
@@ -150,6 +165,7 @@ export default {
             obj.color = "#3C9FE6";
           }
         } else {
+          obj.link = "movieinfo";
           obj.btn = "想看";
           obj.score = "<span>" + item.wish + "</span>人想看";
           obj.color = "#FF80B0";
@@ -194,7 +210,7 @@ export default {
                 let arr = this.moreList.splice(0, 10);
                 this.getMoreList(arr);
               } else {
-                this.moreTip = "没有更多了/(ㄒoㄒ)/~~";
+                this.moreTip = false;
               }
             }
           }, 300);
@@ -205,12 +221,11 @@ export default {
   created() {
     this.getExpectMovie();
     this.getExpectList();
-    if(localStorage.getItem("localCity")){
+    if (localStorage.getItem("localCity")) {
       this.localCityId = JSON.parse(localStorage.getItem("localCity")).id;
     } else {
       this.localCityId = this.localCityId;
     }
-    
   },
   mounted: function () {
     window.addEventListener("scroll", this.handleScroll, true);
@@ -313,8 +328,20 @@ export default {
   }
 
   .more {
-    text-align: center;
+    display: flex;
     padding: 10px 0;
+    span {
+      height: 50px;
+      line-height: 50px;
+      width: 100%;
+      text-align: center;
+    }
   }
+}
+.loadingBox {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: calc(50% - 80px / 2);
 }
 </style>

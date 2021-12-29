@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <div class="header-box">
-      <div class="logo"><img src="../assets/logo.png" alt="" /></div>
+      <div class="logo"></div>
       <div class="text"><slot></slot></div>
     </div>
   </div>
@@ -21,16 +21,13 @@
     .header-box{
       display: flex;
       align-items: center;
+      height: 100%;
     }
 
     .logo{
       width: 40px;
       height: 40px;
-      padding: 10px 0;
-
-      img{
-        width: 100%;
-      }
+      background: url(../assets/logo.png) no-repeat 0 0/cover;
     }
 
     .text{

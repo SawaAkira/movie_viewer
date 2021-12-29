@@ -14,7 +14,7 @@
     </div>
     <div
       class="btn"
-      @click.prevent="btnClick(citem.id)"
+      @click.prevent="btnClick(citem)"
       :style="{ backgroundColor: citem.color }"
     >
       {{ citem.btn }}
@@ -26,8 +26,22 @@
 export default {
   props: ["citem"],
   methods: {
-    btnClick(id) {
-      console.log(id);
+    btnClick(obj) {
+      if (obj.link == "movieinfo") {
+        this.$router.push({
+          name: "MovieInfoIds",
+          params: {
+            id: obj.id,
+          },
+        });
+      } else {
+        this.$router.push({
+          name: "MovieSalesIds",
+          params: {
+            id: obj.id,
+          },
+        });
+      }
     },
   },
 };

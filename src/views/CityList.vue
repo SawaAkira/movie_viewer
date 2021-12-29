@@ -1,6 +1,5 @@
 <template>
   <div class="cityListBox">
-    <div class="searchTip" v-if="!isShow"><span> 加载中...</span></div>
     <div class="cityList" v-if="isShow">
       <div class="location">
         <a id="location"><p>定位城市</p></a>
@@ -55,10 +54,14 @@
         >
       </div>
     </div>
+    <div class="loadingBox" v-if="!isShow">
+        <comp-loadinganimate :wah="80"></comp-loadinganimate>
+      </div>
   </div>
 </template>
 
 <script>
+import CompLoadinganimate from '@/components/comp-loadinganimate.vue'
 export default {
   data() {
     return {
@@ -72,6 +75,9 @@ export default {
       latitude: "",
       isShow: false,
     };
+  },
+  components: {
+    CompLoadinganimate,
   },
   methods: {
     // 获取城市列表
@@ -290,23 +296,12 @@ export default {
     }
   }
 }
-.searchTip{
-    position: absolute;
-    top: 30%;
-    width: 100%;
-    display: flex;
-    
-    span{
-        display: block;
-        margin: 0 auto;
-        padding: 10px 30px;
-        background-color: rgba($color: #000000, $alpha: 0.5);
-        border-radius: 5px;
-        color: #fff;
-        font-size: 18px;
-        box-sizing: border-box;
-        text-align: center;
-    }
+
+.loadingBox {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: calc(50% - 80px / 2);
 }
 ::-webkit-scrollbar {
   width: 0;

@@ -58,14 +58,6 @@ const routes = [
         },
       },
       {
-        path: 'shortvideo',
-        name: 'ShortVideo',
-        component: () => import('@/pages/ShortVideo.vue'),
-        meta: {
-          title: '观影人电影-短视频'
-        },
-      },
-      {
         path: 'personal',
         name: 'Personal',
         component: () => import('@/pages/Personal.vue'),
@@ -98,9 +90,21 @@ const routes = [
   },
   {
     path: '/movieinfo',
-    name: 'MovieInfo',
     redirect: '/movie/hot',
-    component: () => import('@/views/MovieInfo.vue'),
+  },
+  {
+    path: '/moviesales/:id',
+    name: 'MovieSalesIds',
+    component: () => import('@/views/MovieSales.vue'),
+  },
+  {
+    path: '/moviesales',
+    redirect: '/movie/hot',
+  },
+  {
+    path: '/cinema',
+    name: 'CinemaIds',
+    component: () => import('@/views/Cinema.vue'),
   },
 ]
 

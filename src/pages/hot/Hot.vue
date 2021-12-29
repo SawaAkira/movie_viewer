@@ -21,13 +21,20 @@
     </section>
     <section class="movieList">
       <comp-moviecard v-for="item in movieList" :key="item.id" :citem="item"></comp-moviecard>
-      <div class="more">{{ moreTip }}</div>
+      <div class="more" v-if="isShow">
+        <comp-loadinganimate v-if="moreTip" :wah="50"></comp-loadinganimate>
+        <span v-if="!moreTip">没有更多了/(ㄒoㄒ)/~~</span>
+      </div>
     </section>
+    <div class="loadingBox" v-if="isLoadingShow">
+      <comp-loadinganimate :wah="80"></comp-loadinganimate>
+    </div>
   </div>
 </template>
 
 <script>
 import CompMoviecard from '@/components/comp-moviecard.vue'
+import CompLoadinganimate from '@/components/comp-loadinganimate.vue'
 export default {
   data() {
     return {
@@ -35,12 +42,15 @@ export default {
       praiseMovieList: [],
       movieList: [],
       moreList: [],
-      moreTip: "加载中...",
+      moreTip: true,
       isMore: true,
+      isLoadingShow: true,
+      isShow: false,
     };
   },
   components: {
     CompMoviecard,
+    CompLoadinganimate,
   },
   methods: {
     // 获取最受好评电影数据
@@ -55,6 +65,8 @@ export default {
     // 获取电影列表
     getMovieList() {
       axios.get("/index/movieOnInfoList").then((data) => {
+        this.isShow = true;
+        this.isLoadingShow = false;
         if (data.status == 200) {
           let list = data.data.movieList;
           let ids = data.data.movieIds;
@@ -123,7 +135,7 @@ export default {
                 let arr = this.moreList.splice(0, 10);
                 this.getMoreList(arr);
               } else {
-                this.moreTip = "没有更多了/(ㄒoㄒ)/~~";
+                this.moreTip = false;
               }
             }
           }, 300);
@@ -299,8 +311,14 @@ export default {
   }
 
   .more {
-    text-align: center;
+    display: flex;
     padding: 10px 0;
+    span{
+      height: 50px;
+      line-height: 50px;
+      width: 100%;
+      text-align: center;
+    }
   }
 
   .v2dimax {
@@ -310,5 +328,11 @@ export default {
   .v3dimax {
     background: url(../../assets/v3dimax.png) no-repeat 0 0 / cover;
   }
+}
+.loadingBox {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: calc(50% - 80px / 2);
 }
 </style>

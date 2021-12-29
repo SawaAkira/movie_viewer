@@ -5,8 +5,10 @@ import router from './router'
 import 'amfe-flexible'
 import './assets/animate/css/animate.min.css'
 import '../node_modules/bootstrap-icons/font/bootstrap-icons.css'
+import lottie from 'vue-lottie'
 
 Vue.config.productionTip = false
+Vue.component('lottie', lottie)
 
 router.beforeEach((to,from,next) => {
   if(to.meta.title){

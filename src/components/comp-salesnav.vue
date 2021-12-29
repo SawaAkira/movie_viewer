@@ -64,12 +64,12 @@
               v-for="item in brand"
               :key="item.id"
               @click="
-                brandId = item.id;
+                brandIds = item.id;
                 navArr[1].title = item.id == -1 ? '品牌' : item.name;
                 dataProcessing();
                 maskClick();
               "
-              :class="{ active: brandId == item.id }"
+              :class="{ active: brandIds == item.id }"
             >
               <span>{{ item.name }}</span
               ><span>{{ item.count }}</span>
@@ -79,30 +79,52 @@
         <div class="feature" v-if="page == 3">
           <div class="featureBox">
             <div class="fun" v-if="service.length">
-              <h3>特色功能</h3>
+              <h3>影院服务</h3>
               <ul class="splist">
                 <li
                   v-for="item in service"
                   :key="item.id"
-                  @click="
-                    serviceId = item.id;
-                  "
-                  :class="{ active: serviceId == item.id }"
+                  @click="serviceIds = item.id"
+                  :class="{ active: serviceIds == item.id }"
+                >
+                  {{ item.name }}
+                </li>
+              </ul>
+            </div>
+            <div class="fun" v-if="language.length">
+              <h3>放映语言</h3>
+              <ul class="language">
+                <li
+                  v-for="item in language"
+                  :key="item.code"
+                  @click="languageIds = item.code"
+                  :class="{ active: languageIds == item.code }"
+                >
+                  {{ item.name }}
+                </li>
+              </ul>
+            </div>
+            <div class="fun" v-if="dim.length">
+              <h3>影片版本</h3>
+              <ul class="dim">
+                <li
+                  v-for="item in dim"
+                  :key="item.code"
+                  @click="dimIds = item.code"
+                  :class="{ active: dimIds == item.code }"
                 >
                   {{ item.name }}
                 </li>
               </ul>
             </div>
             <div class="hall" v-if="hallType.length">
-              <h3>特殊厅</h3>
+              <h3>影厅类型</h3>
               <ul class="splist">
                 <li
                   v-for="item in hallType"
-                  :key="item.id"
-                  @click="
-                    hallTypeId = item.id;
-                  "
-                  :class="{ active: hallTypeId == item.id }"
+                  :key="item.code"
+                  @click="hallTypeIds = item.code"
+                  :class="{ active: hallTypeIds == item.code }"
                 >
                   {{ item.name }}
                 </li>
@@ -110,8 +132,21 @@
             </div>
           </div>
           <div class="btnBox">
-            <div class="reset" @click="hallTypeId = serviceId = tab4Acitve = tab5Acitve = -1;">重置</div>
-            <div class="confirm" @click="dataProcessing();maskClick();">确定</div>
+            <div
+              class="reset"
+              @click="hallTypeIds = languageIds = dimIds = 'all'; serviceIds = -1;"
+            >
+              重置
+            </div>
+            <div
+              class="confirm"
+              @click="
+                dataProcessing();
+                maskClick();
+              "
+            >
+              确定
+            </div>
           </div>
         </div>
       </div>
@@ -144,20 +179,24 @@ export default {
       brand: [],
       service: [],
       hallType: [],
+      language: [],
+      dim: [],
 
-      hallTypeId: -1, // 影厅类型
-      brandId: -1, // 品牌
-      serviceId: -1, // 影院服务
+      hallTypeIds: "all", // 影厅类型
+      brandIds: -1, // 品牌
+      serviceIds: -1, // 影院服务
       districtId: -1, // 行政区
       areaId: -1, // 行政区二级地区
       lineId: -1, // 地铁线路
       stationId: -1, // 地铁车站
+      languageIds: "all", // 语言
+      dimIds: "all", // 版本
 
       pdistrictId: -1,
       plineId: -1,
     };
   },
-  props: ["cid"],
+  props: ["cid", "mid", "date"],
   methods: {
     // 点击影院导航
     addActive(i) {
@@ -200,27 +239,42 @@ export default {
         districtId: this.districtId,
         lineId: this.lineId,
         stationId: this.stationId,
-        hallType: this.hallTypeId,
-        brandId: this.brandId,
-        serviceId: this.serviceId,
+        hallTypeIds: this.hallTypeIds,
+        brandIds: this.brandIds,
+        serviceIds: this.serviceIds,
         areaId: this.areaId,
+        languageIds: this.languageIds,
+        dimIds: this.dimIds,
       });
     },
 
     // 获取全城数据
     getTotalData() {
       axios
-        .get("/index/filterCinemas", { params: { ci: this.cid } })
+        .get("/movie/select/items", {
+          params: { cityId: this.cid, movieId: this.mid, showDate: this.date },
+        })
         .then((data) => {
           if (data.status == 200) {
-            this.totalShow = data.data.district.subItems;
-            this.district = data.data.district.subItems;
-            this.subway = data.data.subway.subItems;
+            let list = data.data.data;
+            
+            this.totalShow = list.district.subItems;
+            this.district = list.district.subItems;
+            this.subway = list.subway.subItems;
 
-            this.brand = data.data.brand.subItems;
+            this.brand = list.brand.subItems;
 
-            this.service = data.data.service.subItems;
-            this.hallType = data.data.hallType.subItems;
+            this.service = list.service.subItems;
+
+            if(this.hallType.length){
+              this.hallType = list.hallType.subItems;
+            }
+            if(this.language.length){
+              this.language = list.language.subItems;
+            }
+            if(this.dim.length){
+              this.dim = list.dim.subItems;
+            }
           }
         });
     },
@@ -278,10 +332,10 @@ export default {
         this.subItems = this.totalShow[0].subItems;
       }
     },
+    date(val){
+      this.getTotalData();
+    }
   },
-  created(){
-    this.getTotalData();
-  }
 };
 </script>
 
@@ -510,7 +564,7 @@ export default {
   position: relative;
   height: 100%;
 
-  .featureBox{
+  .featureBox {
     height: calc(100% - 60px);
     overflow-y: scroll;
   }
@@ -551,7 +605,7 @@ export default {
     }
   }
 
-  .hall{
+  .hall {
     margin-bottom: 10px;
   }
 
@@ -575,13 +629,14 @@ export default {
     justify-content: space-between;
     align-items: center;
 
-    >div{
-        padding: 7px 25px;
-        border: 1px solid $borderColor;
-        border-radius: 5px;
+    > div {
+      font-size: 16px;
+      padding: 7px 25px;
+      border: 1px solid $borderColor;
+      border-radius: 5px;
     }
 
-    .confirm{
+    .confirm {
       background-color: $color;
       color: #fff;
       border: 1px solid $color;
