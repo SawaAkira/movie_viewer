@@ -1,6 +1,6 @@
 <template>
   <div class="cinema" ref="cinema">
-    <comp-cinemanav v-if="isShow" :cid="cityId" @get-data="getChildData"></comp-cinemanav>
+    <comp-cinemanav :cid="cityId" @get-data="getChildData"></comp-cinemanav>
     <div class="cinemaList" v-if="isShow">
       <comp-cinemacard
         v-for="item in cinemaList"
