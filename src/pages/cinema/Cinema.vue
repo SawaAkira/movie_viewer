@@ -184,6 +184,7 @@ export default {
   height: 100%;
   overflow-y: scroll;
   background-color: $borderColor;
+  position: relative;
 
   > div:first-child {
     position: fixed;

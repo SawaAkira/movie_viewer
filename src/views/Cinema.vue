@@ -11,14 +11,39 @@
       <div class="addrIcon"><i class="bi bi-geo-alt"></i></div>
     </div>
     <div class="swiper" v-if="movieList.length">
-      <comp-swiper @swiper-click="getSwiperId" :cmovie="movieList" :cindex="movieIndex"></comp-swiper>
+      <comp-swiper
+        @swiper-click="getSwiperId"
+        :cmovie="movieList"
+        :cindex="movieIndex"
+      ></comp-swiper>
     </div>
     <div class="movieInfo" v-if="movieList.length">
       <div class="movieHeader">
-        <h3>{{movieList[movieIndex].nm}}</h3>
-        <span>{{text}}</span>
+        <h3>{{ movieList[movieIndex].nm }}</h3>
+        <span>{{ movieText }}</span>
       </div>
-      <p>{{movieList[movieIndex].desc}}</p>
+      <p>{{ movieList[movieIndex].desc }}</p>
+    </div>
+    <ul class="dateList" v-if="movieList.length">
+      <li
+        v-for="(item, index) in movieList[movieIndex].shows"
+        :key="index"
+        @click="
+          dateIndex = index;
+          plist = item.plist;
+        "
+        :class="{ active: dateIndex == index }"
+      >
+        {{ item.showDate.slice(5).replace("-", "月") + "日" }}
+      </li>
+    </ul>
+    <div class="sessionList">
+      <comp-sessioncard
+        v-for="(item, index) in plist"
+        :key="index"
+        :citem="item"
+        :clong="long"
+      ></comp-sessioncard>
     </div>
     <div class="loadingBox" v-if="isLoadingShow">
       <comp-loadinganimate :wah="80"></comp-loadinganimate>
@@ -30,7 +55,8 @@
 <script>
 import CompHeader from "@/components/comp-header.vue";
 import CompSwiper from "@/components/comp-swiper.vue";
-import CompLoadinganimate from '@/components/comp-loadinganimate.vue'
+import CompSessioncard from "@/components/comp-sessioncard.vue";
+import CompLoadinganimate from "@/components/comp-loadinganimate.vue";
 export default {
   data() {
     return {
@@ -40,8 +66,11 @@ export default {
       date: "",
       movieList: [],
       movieIndex: 0,
-      text: "",
+      movieText: "",
       cinemaInfoObj: "",
+      dateIndex: 0,
+      plist: [],
+      long: "",
 
       isLoadingShow: true,
     };
@@ -49,31 +78,40 @@ export default {
   components: {
     CompHeader,
     CompSwiper,
+    CompSessioncard,
     CompLoadinganimate,
   },
-  methods:{
+  methods: {
     getCinemaInfo() {
-      axios.get("/cinema/detail",{params:{cinemaId:this.cinemaId}}).then((data) => {
-        if (data.status == 200) {
+      axios
+        .get("/cinema/detail", { params: { cinemaId: this.cinemaId } })
+        .then((data) => {
+          if (data.status == 200) {
             this.cinemaInfoObj = data.data.data;
             document.title = this.cinemaInfoObj.nm;
-        }
-      });
+          }
+        });
     },
     getCinemaMovie() {
-      axios.get("/cinema/shows",{params:{cinemaId:this.cinemaId,ci:this.ci,channelId:4}}).then((data) => {
-        if (data.status == 200) {
-          this.isLoadingShow = false;
-          this.movieList = data.data.data.movies;
-          this.text = this.movieList[this.movieIndex].sc;
-          this.movieId = this.movieList[this.movieIndex].id;
-          console.log("movieId-->",this.movieId);
-        }
-      });
+      axios
+        .get("/cinema/shows", {
+          params: { cinemaId: this.cinemaId, ci: this.ci, channelId: 4 },
+        })
+        .then((data) => {
+          if (data.status == 200) {
+            this.isLoadingShow = false;
+            this.movieList = data.data.data.movies;
+            this.movieText = this.movieList[this.movieIndex].sc;
+            this.movieId = this.movieList[this.movieIndex].id;
+            this.long = parseInt(this.movieList[this.movieIndex].desc);
+            this.plist =
+              this.movieList[this.movieIndex].shows[this.dateIndex].plist;
+          }
+        });
     },
-    getSwiperId(i){
+    getSwiperId(i) {
       this.movieIndex = i;
-    }
+    },
   },
   created() {
     this.cinemaId = this.$route.query.cinemaId;
@@ -90,12 +128,17 @@ export default {
     this.getCinemaMovie();
   },
   watch: {
-    movieIndex(){
+    movieIndex() {
       this.movieId = this.movieList[this.movieIndex].id;
-      this.text = this.movieList[this.movieIndex].sc == '0.0'? this.movieList[this.movieIndex].wish + '人想看':this.movieList[this.movieIndex].sc + '分';
-      console.log("movieId-->",this.movieId);
-    }
-  }
+      this.movieText =
+        this.movieList[this.movieIndex].sc == "0.0"
+          ? this.movieList[this.movieIndex].wish + "人想看"
+          : this.movieList[this.movieIndex].sc + "分";
+      this.long = parseInt(this.movieList[this.movieIndex].desc);
+      this.dateIndex = 0;
+      this.plist = this.movieList[this.movieIndex].shows[this.dateIndex].plist;
+    },
+  },
 };
 </script>
 
@@ -153,18 +196,18 @@ export default {
     }
   }
 }
-.movieInfo{
+.movieInfo {
   font-size: 18px;
   text-align: center;
   padding: 15px;
   box-sizing: border-box;
   border-bottom: 1px solid $borderColor;
-  .movieHeader{
+  .movieHeader {
     display: flex;
     justify-content: center;
     align-items: flex-end;
 
-    span{
+    span {
       font-size: 14px;
       font-weight: bold;
       margin-left: 5px;
@@ -172,10 +215,32 @@ export default {
     }
   }
 
-  p{
+  p {
     margin-top: 3px;
     font-size: 13px;
     color: #999;
+  }
+}
+.dateList {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: 1px solid $borderColor;
+  overflow-x: scroll;
+  background-color: #fff;
+
+  li {
+    flex: none;
+    width: 115px;
+    line-height: 43px;
+    margin-left: 4.5px;
+    font-size: 14px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .active {
+    border-bottom: 2.5px solid $color;
   }
 }
 .text-ellipsis {
@@ -188,5 +253,8 @@ export default {
   width: 100%;
   left: 0;
   top: calc(50% - 80px / 2);
+}
+::-webkit-scrollbar {
+  display: none;
 }
 </style>
