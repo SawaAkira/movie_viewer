@@ -69,6 +69,7 @@ export default {
 
   .smsg {
     margin-left: 17px;
+    flex: 1;
 
     span {
       font-size: 14px;
