@@ -40,7 +40,7 @@ export default {
                     obj.title = item.title;
                     obj.img = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
                     obj.video = null;
-                    obj.time = 0;
+                    obj.time = '00:00';
                     if(item.video){
                       obj.img = item.video.imgUrl;
                       obj.video = item.video.url;

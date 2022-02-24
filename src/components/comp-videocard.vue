@@ -2,6 +2,7 @@
     <div class="videoCard">
         <div class="videoBox">
             <video :src="info.video" controls ref="video" @ended="playEnd">您的浏览器不支持 video 标签。</video>
+            <div class="trigger" @click="triggerPlay"></div>
             <div class="mask" :style="{backgroundImage: 'url(' + info.img + ')'}" @click="toPlay" v-if="!isPlay">
                 <div class="title">{{info.title}}</div>
                 <div class="time">{{info.time}}</div>
@@ -31,6 +32,14 @@ export default {
         },
         playEnd(){
             this.$emit('endPlayId', this.info.id);
+        },
+        triggerPlay(){
+            let video = this.$refs.video;
+            if(video.paused){
+              video.play();
+            } else {
+              video.pause();
+            }
         }
     },
     watch:{
@@ -105,6 +114,14 @@ export default {
             left: 50%;
             transform: translate(-50%, -50%);
         }
+    }
+
+    .trigger{
+        width: 100%;
+        height: 70%;
+        position: absolute;
+        top: 0;
+        left: 0;
     }
 
     .author{
