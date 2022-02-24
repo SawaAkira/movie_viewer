@@ -38,9 +38,9 @@ export default {
                     obj.isPlay = false;
                     obj.avatar = item.user.avatarurl;
                     obj.title = item.title;
-                    obj.img = null;
+                    obj.img = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
                     obj.video = null;
-                    obj.time = null;
+                    obj.time = 0;
                     if(item.video){
                       obj.img = item.video.imgUrl;
                       obj.video = item.video.url;
