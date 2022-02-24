@@ -229,8 +229,9 @@ export default {
     i{
       color: #eee;
       position: absolute;
-      top: calc(50% - 47px / 2);
-      left: calc(50% - 36px / 2);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
   }
 }

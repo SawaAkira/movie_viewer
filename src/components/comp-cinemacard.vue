@@ -39,6 +39,7 @@ export default {
   .ci_title{
     display: flex;
     align-items: center;
+    justify-content: space-between;
   }
 
   .ci_name {
@@ -56,6 +57,7 @@ export default {
     color: $color4;
     margin-left: 5px;
     width: 70px;
+    text-align: right;
 
     span {
       font-size: 18px;
